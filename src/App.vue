@@ -35,7 +35,7 @@
             <div id="example-5">
               <v-layout row-sm column child-flex-sm>
                 <v-card class="secondary ma-1">
-                  <v-card-row class="green darken-1">
+                  <v-card-row class="teal darken-1">
                     <v-card-title>
                       <span class="white--text">{{item.name}}</span>
                       <v-spacer></v-spacer>
@@ -103,6 +103,11 @@
             </v-container>
           </v-card-text>
         </v-card>
+        <v-dialog v-model="isProgress">
+         <div id="progress-ring">
+           <v-progress-circular indeterminate v-bind:size="70" v-bind:width="7" class="red--text"></v-progress-circular>
+         </div>
+         </v-dialog>
       </v-container>
     </main>
     <v-footer :fixed="fixed">
@@ -139,18 +144,18 @@
         default: false
       }
     },
-    created() {
-      axios.get(`http://localhost:8080/v1/printbooks/1234`)
-        .then(response => {
-          // JSON responses are automatically parsed.
-          this.listitems = response.data
-        })
-        .catch(e => {
-          this.errors.push(e)
-        })
+   async beforeCreate() {
+     try{
+      let response = await axios.get(`http://localhost:8080/v1/printbooks/1234`)
+      this.listitems = response.data
+     }
+     catch(e){
+       this.errors.push(e)
+     }
     },
     data() {
       return {
+        isProgress: false,
         listitems: [],
         filename: "",
         fileObject: '',
@@ -177,13 +182,6 @@
       this.filename = this.value;
     },
     methods: {
-      getFormData(files) {
-        const data = new FormData();
-        [...files].forEach(file => {
-          data.append('data', file, file.name); // currently only one file at a time
-        });
-        return data;
-      },
       onFocus() {
         if (!this.disabled) {
           debugger;
@@ -191,6 +189,7 @@
         }
       },
       async onFileChange($event) {
+        this.isProgress = true
         const files = $event.target.files || $event.dataTransfer.files;
         let data = new FormData();
         data.append('file', files[0]);
@@ -203,7 +202,9 @@
             }
           )
           this.listitems.push(response.data)
+          this.isProgress =false;
         } catch (e) {
+          this.isProgress =false;
           this.errors.push(e)
         }
       }
@@ -217,8 +218,15 @@
     color: #fff;
     text-align: center;
   }
+  #progress-ring
+    text-align: center
 
+  .progress-circular
+    margin: 1rem
   #example-5 .card {
     margin-bottom: 16px;
+  }
+  .dialog {
+    box-shadow: none
   }
 </style>
