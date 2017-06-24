@@ -146,7 +146,7 @@
     },
    async beforeCreate() {
      try{
-      let response = await axios.get(`http://localhost:8080/v1/printbooks/1234`)
+      let response = await axios.get(`http://print-book-service.ap-southeast-2.elasticbeanstalk.com/v1/printbooks/1234`)
       this.listitems = response.data
      }
      catch(e){
@@ -194,7 +194,7 @@
         let data = new FormData();
         data.append('file', files[0]);
         try {
-          let response = await axios.post(`http://localhost:8080/v1/printbooks/1234`,
+          let response = await axios.post(`http://print-book-service.ap-southeast-2.elasticbeanstalk.com/v1/printbooks/1234`,
             data, {
               headers: {
                 'content-type': 'multipart/form-data'
